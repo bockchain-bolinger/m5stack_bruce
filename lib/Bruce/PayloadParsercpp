@@ -1,0 +1,48 @@
+#include "PayloadParser.h"
+
+PayloadParser::PayloadParser() {
+    _currentIndex = 0;
+}
+
+String PayloadParser::parseLine(String payload) {
+    String line = "";
+    int start = _currentIndex;
+    
+    while(_currentIndex < payload.length()) {
+        if(payload[_currentIndex] == '\n') {
+            line = payload.substring(start, _currentIndex);
+            _currentIndex++;
+            break;
+        }
+        _currentIndex++;
+    }
+    
+    if(line == "" && _currentIndex >= start) {
+        line = payload.substring(start);
+    }
+    
+    line.trim();
+    return line;
+}
+
+bool PayloadParser::hasMoreCommands(String payload) {
+    return _currentIndex < payload.length();
+}
+
+void PayloadParser::reset() {
+    _currentIndex = 0;
+}
+
+String PayloadParser::extractDelay(String command) {
+    if(command.startsWith("DELAY ")) {
+        return command.substring(6);
+    }
+    return "";
+}
+
+String PayloadParser::extractString(String command) {
+    if(command.startsWith("STRING ")) {
+        return command.substring(7);
+    }
+    return "";
+}
