@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 
-// Struktur für Payloads
 struct Payload {
     const char* name;
     const char* commands;
@@ -12,6 +11,10 @@ struct Payload {
 
 #ifndef ENABLE_DANGEROUS_PAYLOADS
 #define ENABLE_DANGEROUS_PAYLOADS 0
+#endif
+
+#ifndef ENABLE_WEB_SENSITIVE_PAYLOADS
+#define ENABLE_WEB_SENSITIVE_PAYLOADS 0
 #endif
 
 // ==================== WINDOWS PAYLOADS ====================
@@ -61,6 +64,23 @@ const Payload windowsPayloads[] = {
 #endif
 };
 
+const bool windowsWebAllowed[] = {
+    true,
+    true,
+    true,
+    true,
+#if ENABLE_WEB_SENSITIVE_PAYLOADS
+    true
+#else
+    false
+#endif
+#if ENABLE_DANGEROUS_PAYLOADS
+    ,false,
+    false,
+    false
+#endif
+};
+
 // ==================== BLUETOOTH PAYLOADS ====================
 
 const Payload bluetoothPayloads[] = {
@@ -74,6 +94,11 @@ const Payload bluetoothPayloads[] = {
         "BT_INIT\nDELAY 1000\nSTRING AT+NAME=iPhone\nENTER",
         "Spooft Bluetooth Namen"
     }
+};
+
+const bool bluetoothWebAllowed[] = {
+    false,
+    false
 };
 
 // ==================== WIFI PAYLOADS ====================
@@ -91,6 +116,11 @@ const Payload wifiPayloads[] = {
     }
 };
 
+const bool wifiWebAllowed[] = {
+    false,
+    false
+};
+
 // ==================== KOMBINIERTE PAYLOADS ====================
 
 const Payload combinedPayloads[] = {
@@ -103,6 +133,12 @@ const Payload combinedPayloads[] = {
 #endif
 };
 
+const bool combinedWebAllowed[] = {
+#if ENABLE_DANGEROUS_PAYLOADS
+    false
+#endif
+};
+
 // ==================== GESAMTLISTE ====================
 
 const int windowsCount = sizeof(windowsPayloads) / sizeof(Payload);
@@ -111,35 +147,37 @@ const int wifiCount = sizeof(wifiPayloads) / sizeof(Payload);
 const int combinedCount = sizeof(combinedPayloads) / sizeof(Payload);
 const int totalPayloads = windowsCount + bluetoothCount + wifiCount + combinedCount;
 
-// Kombiniertes Array aller Payloads
 Payload payloads[totalPayloads];
+bool payloadWebAllowed[totalPayloads];
 
-// Hilfsfunktion zum Initialisieren
 void initPayloads() {
     int index = 0;
-    
-    // Windows Payloads kopieren
+
     for(int i = 0; i < windowsCount; i++) {
-        payloads[index++] = windowsPayloads[i];
+        payloads[index] = windowsPayloads[i];
+        payloadWebAllowed[index] = windowsWebAllowed[i];
+        index++;
     }
-    
-    // Bluetooth Payloads kopieren
+
     for(int i = 0; i < bluetoothCount; i++) {
-        payloads[index++] = bluetoothPayloads[i];
+        payloads[index] = bluetoothPayloads[i];
+        payloadWebAllowed[index] = bluetoothWebAllowed[i];
+        index++;
     }
-    
-    // WiFi Payloads kopieren
+
     for(int i = 0; i < wifiCount; i++) {
-        payloads[index++] = wifiPayloads[i];
+        payloads[index] = wifiPayloads[i];
+        payloadWebAllowed[index] = wifiWebAllowed[i];
+        index++;
     }
-    
-    // Kombinierte Payloads kopieren
+
     for(int i = 0; i < combinedCount; i++) {
-        payloads[index++] = combinedPayloads[i];
+        payloads[index] = combinedPayloads[i];
+        payloadWebAllowed[index] = combinedWebAllowed[i];
+        index++;
     }
 }
 
-// Anzahl der Payloads
 const int payloadCount = totalPayloads;
 
 #endif

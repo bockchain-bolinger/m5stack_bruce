@@ -44,6 +44,7 @@ void serviceTasksDuringDelay(int durationMs);
 bool ensureAuthorized();
 String htmlEscape(const String& input);
 bool executeCommand(const String& cmd);
+bool isPayloadWebExecutable(int index);
 
 // ==================== FUNKTIONEN ====================
 
@@ -351,6 +352,13 @@ String htmlEscape(const String& input) {
     return output;
 }
 
+bool isPayloadWebExecutable(int index) {
+    if(index < 0 || index >= payloadCount) {
+        return false;
+    }
+    return payloadWebAllowed[index];
+}
+
 void setupWebServer() {
     if(webServerStarted) {
         logMessage("Web server already running");
@@ -365,9 +373,13 @@ void setupWebServer() {
         String html = "<html><body><h1>M5Stack Bruce Control</h1>";
         html += "<p>Device: " + String(DEVICE_NAME) + "</p>";
         html += "<p>Last Log: " + htmlEscape(lastLog) + "</p>";
-        html += "<h2>Payloads:</h2>";
+        html += "<h2>Payloads (Web-allowlist):</h2>";
         for(int i = 0; i < payloadCount; i++) {
-            html += "<p><a href='/execute?payload=" + String(i) + "'>" + htmlEscape(String(payloads[i].name)) + "</a></p>";
+            if(isPayloadWebExecutable(i)) {
+                html += "<p><a href='/execute?payload=" + String(i) + "'>" + htmlEscape(String(payloads[i].name)) + "</a></p>";
+            } else {
+                html += "<p><span style='color:#888'>" + htmlEscape(String(payloads[i].name)) + " (gesperrt)</span></p>";
+            }
         }
         html += "</body></html>";
         server.send(200, "text/html", html);
@@ -394,6 +406,11 @@ void setupWebServer() {
         int payloadIndex = payloadArg.toInt();
         if(payloadIndex < 0 || payloadIndex >= payloadCount) {
             sendHttpError(404, "not_found", "payload not found");
+            return;
+        }
+
+        if(!isPayloadWebExecutable(payloadIndex)) {
+            sendHttpError(403, "forbidden_payload", "payload not allowed via web profile");
             return;
         }
 
