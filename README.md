@@ -18,3 +18,9 @@ Diese Version läuft komplett ohne SD-Karte. Alle Payloads sind im Flash-Speiche
 
 ### Optional: Gefährliche Payloads bewusst aktivieren
 Setze in `platformio.ini` den Build-Flag auf `-D ENABLE_DANGEROUS_PAYLOADS=1` (nur in isolierten Testumgebungen).
+
+
+## ⚙️ Stabilität & Performance (Phase 2)
+- Payload-Ausführung meldet jetzt Erfolg/Fehler pro Kommando (kein stilles Ignorieren unbekannter Kommandos).
+- Delays bedienen weiterhin UI/Webserver (`serviceTasksDuringDelay`), damit das Gerät während längerer Payload-Schritte responsiver bleibt.
+- Web-API liefert deterministische JSON-Antworten für Erfolg/Fehler (`status`, `code`, `message`).
