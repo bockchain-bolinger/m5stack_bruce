@@ -24,11 +24,14 @@ bool wifiMode = false;
 String wifiSSID = "";
 String wifiPassword = "";
 String lastLog = "";
+bool webServerStarted = false;
+bool modeSwitchHandled = false;
 
 void handleBluetoothCommand(String cmd);
 void handleWifiCommand(String cmd);
 void connectToWiFi();
 void setupWebServer();
+void sendHttpError(int code, const String& message);
 
 // ==================== FUNKTIONEN ====================
 
@@ -220,7 +223,16 @@ void connectToWiFi() {
     }
 }
 
+void sendHttpError(int code, const String& message) {
+    server.send(code, "application/json", "{\"error\":\"" + message + "\"}");
+}
+
 void setupWebServer() {
+    if(webServerStarted) {
+        logMessage("Web server already running");
+        return;
+    }
+
     server.on("/", HTTP_GET, []() {
         String html = "<html><body><h1>M5Stack Bruce Control</h1>";
         html += "<p>Device: " + String(DEVICE_NAME) + "</p>";
@@ -235,16 +247,31 @@ void setupWebServer() {
     });
     
     server.on("/execute", HTTP_GET, []() {
-        if(server.hasArg("payload")) {
-            int payloadIndex = server.arg("payload").toInt();
-            if(payloadIndex >= 0 && payloadIndex < payloadCount) {
-                server.send(200, "text/plain", "Executing: " + String(payloads[payloadIndex].name));
-                executePayload(payloadIndex);
+        if(!server.hasArg("payload")) {
+            sendHttpError(400, "missing payload parameter");
+            return;
+        }
+
+        String payloadArg = server.arg("payload");
+        for(size_t i = 0; i < payloadArg.length(); i++) {
+            if(!isDigit(payloadArg[i])) {
+                sendHttpError(400, "payload must be a positive integer");
+                return;
             }
         }
+
+        int payloadIndex = payloadArg.toInt();
+        if(payloadIndex < 0 || payloadIndex >= payloadCount) {
+            sendHttpError(404, "payload not found");
+            return;
+        }
+
+        server.send(200, "text/plain", "Executing: " + String(payloads[payloadIndex].name));
+        executePayload(payloadIndex);
     });
     
     server.begin();
+    webServerStarted = true;
     logMessage("Web server started on port 80");
 }
 
@@ -299,8 +326,10 @@ void loop() {
         logMessage("Selected: " + String(payloads[currentPayload].name));
     }
     
-    // Lange B-Taste: Modus wechseln
-    if(M5.BtnB.pressedFor(2000)) {
+    // Lange B-Taste: Modus wechseln (nur einmal pro Tastendruck)
+    if(M5.BtnB.pressedFor(2000) && !modeSwitchHandled) {
+        modeSwitchHandled = true;
+
         if(usbMode) {
             usbMode = false;
             btMode = true;
@@ -318,6 +347,10 @@ void loop() {
             logMessage("Switched to USB mode");
         }
         showMenu();
+    }
+
+    if(M5.BtnB.wasReleased()) {
+        modeSwitchHandled = false;
     }
     
     // Web-Server verarbeiten (falls WiFi aktiv)
