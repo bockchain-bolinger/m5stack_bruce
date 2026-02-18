@@ -5,6 +5,15 @@
 #include <WebServer.h>
 #include <ArduinoJson.h>
 #include "payloads.h"
+#include "config.h"
+
+#ifndef WEB_AUTH_USER
+#define WEB_AUTH_USER "admin"
+#endif
+
+#ifndef WEB_AUTH_PASSWORD
+#define WEB_AUTH_PASSWORD AP_PASSWORD
+#endif
 
 // ==================== KONFIGURATION ====================
 #define DEVICE_NAME "M5Stack-Bruce"
@@ -32,6 +41,8 @@ void handleWifiCommand(String cmd);
 void connectToWiFi();
 void setupWebServer();
 void sendHttpError(int code, const String& message);
+bool ensureAuthorized();
+String htmlEscape(const String& input);
 
 // ==================== FUNKTIONEN ====================
 
@@ -221,10 +232,40 @@ void connectToWiFi() {
     } else {
         logMessage("WiFi connection failed");
     }
+
+    wifiPassword = "";
 }
 
 void sendHttpError(int code, const String& message) {
     server.send(code, "application/json", "{\"error\":\"" + message + "\"}");
+}
+
+bool ensureAuthorized() {
+    if(!server.authenticate(WEB_AUTH_USER, WEB_AUTH_PASSWORD)) {
+        server.requestAuthentication();
+        logMessage("Unauthorized web request blocked");
+        return false;
+    }
+    return true;
+}
+
+String htmlEscape(const String& input) {
+    String output;
+    output.reserve(input.length() + 16);
+
+    for(size_t i = 0; i < input.length(); i++) {
+        char c = input[i];
+        switch(c) {
+            case '&': output += "&amp;"; break;
+            case '<': output += "&lt;"; break;
+            case '>': output += "&gt;"; break;
+            case '"': output += "&quot;"; break;
+            case '\'': output += "&#39;"; break;
+            default: output += c; break;
+        }
+    }
+
+    return output;
 }
 
 void setupWebServer() {
@@ -234,19 +275,27 @@ void setupWebServer() {
     }
 
     server.on("/", HTTP_GET, []() {
+        if(!ensureAuthorized()) {
+            return;
+        }
+
         String html = "<html><body><h1>M5Stack Bruce Control</h1>";
         html += "<p>Device: " + String(DEVICE_NAME) + "</p>";
-        html += "<p>Last Log: " + lastLog + "</p>";
+        html += "<p>Last Log: " + htmlEscape(lastLog) + "</p>";
         html += "<h2>Payloads:</h2>";
         for(int i = 0; i < payloadCount; i++) {
             html += "<p><a href='/execute?payload=" + String(i) + "'>" + 
-                   payloads[i].name + "</a></p>";
+                   htmlEscape(String(payloads[i].name)) + "</a></p>";
         }
         html += "</body></html>";
         server.send(200, "text/html", html);
     });
     
     server.on("/execute", HTTP_GET, []() {
+        if(!ensureAuthorized()) {
+            return;
+        }
+
         if(!server.hasArg("payload")) {
             sendHttpError(400, "missing payload parameter");
             return;
