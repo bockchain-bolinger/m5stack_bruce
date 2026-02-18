@@ -25,6 +25,11 @@ String wifiSSID = "";
 String wifiPassword = "";
 String lastLog = "";
 
+void handleBluetoothCommand(String cmd);
+void handleWifiCommand(String cmd);
+void connectToWiFi();
+void setupWebServer();
+
 // ==================== FUNKTIONEN ====================
 
 void initDisplay() {
@@ -188,6 +193,12 @@ void handleWifiCommand(String cmd) {
             wifiPassword = cmd.substring(spacePos + 1);
             connectToWiFi();
         }
+    } else if(cmd == "WIFI_START_SERVER") {
+        if(WiFi.status() == WL_CONNECTED) {
+            setupWebServer();
+        } else {
+            logMessage("WiFi not connected");
+        }
     }
 }
 
@@ -247,6 +258,9 @@ void setup() {
     // Display
     initDisplay();
     logMessage("Device started successfully");
+
+    // Payloads aus Header in Laufzeit-Array kopieren
+    initPayloads();
     
     // Bluetooth Keyboard initialisieren
     bleKeyboard.begin();
