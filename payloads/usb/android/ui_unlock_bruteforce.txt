@@ -1,0 +1,6 @@
+REM Android PIN Bruteforce (Example: 0000)
+REM Nur für Demonstrationszwecke
+DELAY 1000
+STRING 0000
+ENTER
+DELAY 1000

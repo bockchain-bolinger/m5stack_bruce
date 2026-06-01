@@ -1,0 +1,6 @@
+REM Windows DNS Exfiltration Test
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd /c "nslookup google.com 1.1.1.1 > %TEMP%\dns_test.txt 2>&1"
+ENTER

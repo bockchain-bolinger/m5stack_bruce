@@ -1,0 +1,6 @@
+REM Windows Connection Check
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd /c "netstat -ano > %TEMP%\connections.txt"
+ENTER

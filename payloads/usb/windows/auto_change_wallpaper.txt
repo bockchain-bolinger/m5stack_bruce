@@ -1,0 +1,6 @@
+REM Windows Change Wallpaper (Example URL)
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -NoProfile -WindowStyle Hidden -Command "$url='https://raw.githubusercontent.com/bockchain-bolinger/m5stack_bruce/main/resources/templates/wallpaper.jpg'; $path='%TEMP%\bg.jpg'; Invoke-WebRequest -Uri $url -OutFile $path; [AppData.Wallpaper]::SetWallpaper($path)"
+ENTER

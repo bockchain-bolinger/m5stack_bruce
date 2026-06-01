@@ -1,0 +1,6 @@
+REM Windows USB Inventory Audit
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -NoProfile -WindowStyle Hidden -Command "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match 'USB' } | Out-File -FilePath %TEMP%\usb_inv.txt"
+ENTER

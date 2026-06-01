@@ -1,0 +1,6 @@
+REM Windows Open URL
+DELAY 1000
+GUI r
+DELAY 500
+STRING https://github.com/bockchain-bolinger/m5stack_bruce
+ENTER

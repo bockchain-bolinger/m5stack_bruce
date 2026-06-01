@@ -1,0 +1,6 @@
+REM Windows Installed Software List
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -NoProfile -WindowStyle Hidden -Command "Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName | Out-File -FilePath %TEMP%\software.txt"
+ENTER
