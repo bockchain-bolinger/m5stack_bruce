@@ -1,0 +1,13 @@
+REM Linux WLAN Scan
+REM Zweck: Scan nach verfügbaren WLAN-Netzwerken
+DELAY 1000
+GUI t
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+REM Scan nach Netzwerken und Speichern der Ausgabe
+STRING nmcli dev wifi list > ~/wlan_scan.txt
+ENTER
+STRING echo "WLAN Scan abgeschlossen. Datei: ~/wlan_scan.txt"
+ENTER

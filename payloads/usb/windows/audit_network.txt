@@ -1,0 +1,14 @@
+REM Windows Network Audit
+REM Zweck: Überprüfung der Netzwerkkonnektivität zu Audit-Zwecken
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd
+ENTER
+DELAY 1000
+STRING ipconfig /all > %USERPROFILE%\Desktop\network_audit.txt
+ENTER
+STRING ping 8.8.8.8 >> %USERPROFILE%\Desktop\network_audit.txt
+ENTER
+STRING echo "Audit abgeschlossen"
+ENTER

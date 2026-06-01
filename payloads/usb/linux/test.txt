@@ -1,0 +1,5 @@
+# DuckyScript Beispiel (Linux)
+
+REM Beispiel für einen harmlosen Test-Payload
+STRING echo "Bruce Test Payload erfolgreich ausgeführt"
+ENTER

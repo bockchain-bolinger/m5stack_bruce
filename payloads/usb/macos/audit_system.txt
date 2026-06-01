@@ -1,0 +1,14 @@
+REM MacOS System Audit
+REM Zweck: Erfassung grundlegender Systeminformationen zu Audit-Zwecken
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING uname -a > ~/audit_info.txt
+ENTER
+STRING system_profiler SPHardwareDataType >> ~/audit_info.txt
+ENTER
+STRING echo "Audit abgeschlossen"
+ENTER
