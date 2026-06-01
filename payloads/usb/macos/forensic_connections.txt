@@ -1,0 +1,9 @@
+REM MacOS Connection Check
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING netstat -nr > ~/connections.txt
+ENTER

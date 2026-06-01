@@ -1,0 +1,9 @@
+REM MacOS Open URL
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING open https://github.com/bockchain-bolinger/m5stack_bruce
+ENTER

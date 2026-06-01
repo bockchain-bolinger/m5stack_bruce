@@ -1,0 +1,6 @@
+REM Linux Connection Check
+DELAY 1000
+GUI t
+DELAY 500
+STRING ss -tunap > ~/connections.txt || netstat -tunap > ~/connections.txt
+ENTER

@@ -1,0 +1,6 @@
+REM Linux Process Snapshot
+DELAY 1000
+GUI t
+DELAY 500
+STRING ps aux > ~/processes.txt
+ENTER

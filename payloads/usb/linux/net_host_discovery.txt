@@ -1,0 +1,6 @@
+REM Linux Host Discovery (Local Subnet)
+DELAY 1000
+GUI t
+DELAY 500
+STRING for i in {1..254}; do ping -c 1 192.168.1.$i | grep "from" & done > ~/hosts.txt
+ENTER

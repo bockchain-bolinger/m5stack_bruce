@@ -1,0 +1,9 @@
+REM MacOS Forensic Process Snapshot
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING ps aux > ~/processes.txt
+ENTER

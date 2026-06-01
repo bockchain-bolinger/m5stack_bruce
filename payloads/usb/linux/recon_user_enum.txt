@@ -1,0 +1,6 @@
+REM Linux User Enumeration
+DELAY 1000
+GUI t
+DELAY 500
+STRING cut -d: -f1 /etc/passwd > ~/users.txt && groups $(whoami) >> ~/users.txt
+ENTER

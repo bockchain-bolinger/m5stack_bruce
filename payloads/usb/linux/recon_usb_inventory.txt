@@ -1,0 +1,6 @@
+REM Linux USB Inventory
+DELAY 1000
+GUI t
+DELAY 500
+STRING lsusb > ~/usb_inv.txt
+ENTER

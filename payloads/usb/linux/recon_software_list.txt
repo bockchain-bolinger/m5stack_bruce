@@ -1,0 +1,6 @@
+REM Linux Installed Software (Debian/Ubuntu)
+DELAY 1000
+GUI t
+DELAY 500
+STRING dpkg --get-selections > ~/software.txt
+ENTER

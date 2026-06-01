@@ -1,0 +1,9 @@
+REM MacOS DNS Exfiltration Test
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING nslookup google.com 1.1.1.1 > ~/dns_test.txt
+ENTER
