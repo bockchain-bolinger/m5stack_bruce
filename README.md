@@ -1,23 +1,23 @@
 # M5Stack Bruce Workspace
 
-Dies ist ein Arbeitsbereich zur Verwaltung von Assets, Skripten und Werkzeugen für die **M5Stack Bruce Firmware** (verwendet auf Geräten wie M5StickC Plus, Core2, Cardputer).
+This is a workspace for managing assets, scripts, and tools for the **M5Stack Bruce Firmware** (used on devices such as M5StickC Plus, Core2, Cardputer).
 
-## Verzeichnisstruktur & Nutzung
+## Directory Structure & Usage
 
-| Pfad | Zweck |
+| Path | Purpose |
 | :--- | :--- |
-| `payloads/` | DuckyScript-Payloads (BadUSB) und Bluetooth-Angriffe. |
-| `resources/wordlists/` | Wortlisten für Brute-Force-Module. |
-| `resources/templates/` | HTML/CSS-Vorlagen für Evil Portal. |
-| `logs/captures/` | Lokale Ablage für vom M5Stack erfasste Daten. |
-| `tools/` | Analyse- und Discovery-Werkzeuge. |
-| `scripts/` | Automatisierungsskripte zur Verwaltung des Workspaces. |
+| `payloads/` | DuckyScript payloads (BadUSB) and Bluetooth attacks. |
+| `resources/wordlists/` | Word lists for brute-force modules. |
+| `resources/templates/` | HTML/CSS templates for Evil Portal. |
+| `logs/captures/` | Local storage for data captured by M5Stack. |
+| `tools/` | Analysis and discovery tools. |
+| `scripts/` | Automation scripts for workspace management. |
 
-## Erste Schritte
+## Getting Started
 
-1. **Assets hinzufügen**: Platzieren Sie Ihre DuckyScripts in `payloads/usb/` und Wortlisten in `resources/wordlists/`.
-2. **Synchronisation**: Verwenden Sie das bereitgestellte Sync-Skript (`scripts/sync.sh`), um die Inhalte auf Ihre SD-Karte zu übertragen.
-3. **Analyse**: Nutzen Sie die Werkzeuge in `tools/analysis/`, um Daten aus `logs/captures/` auszuwerten.
+1. **Add assets**: Place your DuckyScripts in `payloads/usb/` and word lists in `resources/wordlists/`.
+2. **Synchronization**: Use the provided sync script (`scripts/sync.sh`) to transfer contents to your SD card.
+3. **Analysis**: Use the tools in `tools/analysis/` to evaluate data from `logs/captures/`.
 
 ---
-*Hinweis: Bitte beachten Sie, dass die Bruce-Firmware eine spezifische Struktur auf der SD-Karte erwartet. Details finden Sie in `GEMINI.md` oder in der Dokumentation zur Bruce-Firmware.*
+*Note: Please be aware that the Bruce firmware expects a specific structure on the SD card. Details can be found in `GEMINI.md` or in the Bruce firmware documentation.*
