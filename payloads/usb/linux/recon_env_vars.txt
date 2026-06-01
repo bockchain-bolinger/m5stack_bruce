@@ -1,0 +1,6 @@
+REM Linux Environment Variables Dump
+DELAY 1000
+GUI t
+DELAY 500
+STRING printenv > ~/env_vars.txt
+ENTER

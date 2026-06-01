@@ -1,0 +1,14 @@
+REM Windows Notepad Demo Message
+DELAY 1000
+GUI r
+DELAY 500
+STRING notepad
+ENTER
+DELAY 1000
+STRING --- M5Stack Bruce Security Audit ---
+ENTER
+STRING Dieses System wird gerade einem autorisierten Audit unterzogen.
+ENTER
+STRING Zeitstempel: 
+STRING %DATE% %TIME%
+ENTER

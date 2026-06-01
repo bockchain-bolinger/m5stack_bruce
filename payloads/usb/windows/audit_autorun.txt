@@ -1,0 +1,6 @@
+REM Windows Autorun Registry Audit
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -NoProfile -WindowStyle Hidden -Command "Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Run, HKLM:\Software\Microsoft\Windows\CurrentVersion\Run | Out-File -FilePath %TEMP%\autorun_audit.txt"
+ENTER

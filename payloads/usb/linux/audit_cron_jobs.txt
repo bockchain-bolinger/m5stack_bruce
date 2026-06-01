@@ -1,0 +1,6 @@
+REM Linux Cron Jobs Audit
+DELAY 1000
+GUI t
+DELAY 500
+STRING crontab -l > ~/cron_audit.txt && ls -la /etc/cron.* >> ~/cron_audit.txt
+ENTER

